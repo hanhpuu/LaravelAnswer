@@ -19,7 +19,7 @@
         <li><a href="#">Popular</a></li>
       </ul>
       <ul class="nav navbar-nav navbar-right">
-        <a href="#" class="btn btn-primary" style="margin-top:5px;">Ask A Question</a>
+        <a href="/questions/create" class="btn btn-primary" style="margin-top:5px;">Ask A Question</a>
       </ul>
     </div><!-- /.navbar-collapse -->
   </div><!-- /.container-fluid -->

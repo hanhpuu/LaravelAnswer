@@ -59,7 +59,10 @@ class QuestionController extends Controller
      */
     public function show($id)
     {
-        //
+        //Use the model to find 1 record from the database
+	$question = Question::findOrFail($id);
+	//show the view and pass the record to the view	
+	return view('questions.show')->with('question', $question);
     }
 
     /**
