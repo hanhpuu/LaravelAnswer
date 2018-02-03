@@ -14,7 +14,10 @@ class QuestionController extends Controller
      */
     public function index()
     {
-        //
+        //go to the model and get a group of records
+	$questions = Question::all();
+	//return the view, and pass in the group of records to loop through
+	return view('questions.index')->with('questions', $questions);
     }
 
     /**
