@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Answer;
 use App\Question;
+use Auth;
 
 class AnswersController extends Controller
 {
@@ -27,6 +28,7 @@ class AnswersController extends Controller
 	]);
 	$answer = new Answer;
 	$answer->content = $request->content;
+	$answer->user()->associate(Auth::id());
 	
 	$question = Question::findOrFail($request->question_id);
 	$question->answers()->save($answer);
@@ -43,9 +45,14 @@ class AnswersController extends Controller
      */
     public function edit($id)
     {
-        //
+        $answer = Answer::findOrFail($id);
+	$question = Question::findOrFail($answer->question_id);
+	if($answer->user->id != Auth::id()) {
+	    return abort(403);
+	}
+	    return view('answers.edit', ['answer' => $answer, 'question' =>$question]);
     }
-
+    
     /**
      * Update the specified resource in storage.
      *
@@ -55,7 +62,22 @@ class AnswersController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+	
+        //validate the answer
+	$this->validate($request, [
+	    
+	    'content' => "required|min:15",
+	    'question_id' => "required|integer",
+	]);
+	//process the data and update the question
+	$answer = Answer::find($id);
+	$answer->content = $request->content;    
+	
+	$question = Question::findOrFail($request->question_id);
+	$question->answers()->save($answer);
+	
+	return redirect()->route('questions.show', ['question' => $question->id, 'successans' => 'Question updated']);
+   
     }
 
     /**

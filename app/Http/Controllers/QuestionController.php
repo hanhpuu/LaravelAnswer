@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Question;
+use Auth;
 
 class QuestionController extends Controller
 {
@@ -51,6 +52,7 @@ class QuestionController extends Controller
 	$question = new Question();
 	$question->title = $request->title;
 	$question->description = $request->description; 
+	$question->user()->associate(Auth::id());
 	//if succesful, we want to redirect	
 	if($question->save()){
 	    return redirect()->route('questions.show', $question->id);
@@ -81,7 +83,12 @@ class QuestionController extends Controller
      */
     public function edit($id)
     {
-        //
+        $question = Question::findOrFail($id);
+	
+	if($question->user->id != Auth::id()) {
+	    return abort(403);
+	}
+	    return view('questions.edit', ['question' => $question]);
     }
 
     /**
@@ -93,7 +100,17 @@ class QuestionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+    //validate the form data
+	$this->validate($request, [
+	    'title' => 'required|max:255',
+	]);
+    //process the data and update the question
+	$question = Question::find($id);
+	$question->title = $request->title;
+	$question->description = $request->description;    
+	$question->save();
+	return view('questions.show', ['question' => $question, 'success' => 'Question updated']);
+	
     }
 
     /**
